@@ -1,7 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"flag"
+	"log"
+	"net/http"
+)
+
+var addr = flag.String("addr", ":8080", "http server address")
 
 func main() {
-	fmt.Println("Welcome to GoChat.")
+	flag.Parse()
+
+	wsServer := GetWsServer()
+
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		wsServer.ServeWs(w, r)
+	})
+
+	log.Fatal(http.ListenAndServe(*addr, nil))
 }
