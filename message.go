@@ -1,6 +1,6 @@
 package main
 
 type Message struct {
-	SenderID uint   `json:"sender_id"`
+	SenderID string `json:"sender_id"`
 	Message  string `json:"message"`
 }
