@@ -19,6 +19,7 @@ var wsServer *WsServer
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  2048,
 	WriteBufferSize: 2048,
+	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
 func init() {
@@ -62,6 +63,7 @@ func (s *WsServer) ServeWs(w http.ResponseWriter, r *http.Request) {
 	wsConn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
+		return
 	}
 
 	client := NewClient(s, wsConn, name[0])
@@ -75,7 +77,12 @@ func (s *WsServer) handleRegister(client *Client) {
 }
 
 func (s *WsServer) handleBroadcast(message *Message) {
-
+	senderID := message.SenderID
+	for id, client := range s.clients {
+		if id != senderID {
+			client.send <- message
+		}
+	}
 }
 
 func (s *WsServer) handleUnregister(client *Client) {
