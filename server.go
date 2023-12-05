@@ -8,8 +8,10 @@ import (
 )
 
 type WsServer struct {
-	clients  map[string]*Client
-	register chan *Client
+	clients    map[string]*Client
+	register   chan *Client
+	unregister chan *Client
+	broadcast  chan *Message
 }
 
 var wsServer *WsServer
@@ -21,13 +23,32 @@ var upgrader = websocket.Upgrader{
 
 func init() {
 	wsServer = &WsServer{
-		clients:  make(map[string]*Client),
-		register: make(chan *Client),
+		clients:    make(map[string]*Client),
+		register:   make(chan *Client),
+		unregister: make(chan *Client),
+		broadcast:  make(chan *Message),
 	}
 }
 
 func GetWsServer() *WsServer {
 	return wsServer
+}
+
+func (s *WsServer) Run() {
+	for {
+		select {
+
+		case client := <-s.register:
+			s.handleRegister(client)
+
+		case client := <-s.unregister:
+			s.handleUnregister(client)
+
+		case message := <-s.broadcast:
+			s.handleBroadcast(message)
+
+		}
+	}
 }
 
 func (s *WsServer) ServeWs(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +64,19 @@ func (s *WsServer) ServeWs(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	client := NewClient(wsConn, name[0])
+	client := NewClient(s, wsConn, name[0])
 
 	s.register <- client
+}
+
+func (s *WsServer) handleRegister(client *Client) {
+
+}
+
+func (s *WsServer) handleBroadcast(message *Message) {
+
+}
+
+func (s *WsServer) handleUnregister(client *Client) {
+
 }

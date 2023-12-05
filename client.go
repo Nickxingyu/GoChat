@@ -6,16 +6,18 @@ import (
 )
 
 type Client struct {
-	id   string
-	conn *websocket.Conn
-	name string
+	id       string
+	conn     *websocket.Conn
+	name     string
+	wsServer *WsServer
 }
 
-func NewClient(conn *websocket.Conn, name string) *Client {
+func NewClient(wsServer *WsServer, conn *websocket.Conn, name string) *Client {
 	client := Client{
-		id:   uuid.NewString(),
-		conn: conn,
-		name: name,
+		id:       uuid.NewString(),
+		conn:     conn,
+		name:     name,
+		wsServer: wsServer,
 	}
 	return &client
 }
