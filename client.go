@@ -115,5 +115,6 @@ func (c *Client) resetWriteDeadLine() {
 
 func (c *Client) handleMessage(message *Message) {
 	message.SenderID = c.id
+	message.Name = c.name
 	c.wsServer.broadcast <- message
 }
