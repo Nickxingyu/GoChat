@@ -27,14 +27,13 @@ type Client struct {
 }
 
 func NewClient(wsServer *WsServer, conn *websocket.Conn, name string) *Client {
-	client := Client{
+	return &Client{
 		id:       uuid.NewString(),
 		conn:     conn,
 		name:     name,
 		wsServer: wsServer,
 		send:     make(chan *Message),
 	}
-	return &client
 }
 
 func (c *Client) StartReadWriteLoop() {
@@ -65,9 +64,10 @@ func (c *Client) readLoop() {
 				log.Println("Unexpected Close Error: " + err.Error())
 				break
 			}
-
-			c.handleMessage(&message)
+			log.Println("Close Error: " + err.Error())
 		}
+
+		c.handleMessage(&message)
 	}
 }
 
