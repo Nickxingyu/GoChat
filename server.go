@@ -70,7 +70,8 @@ func (s *WsServer) ServeWs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *WsServer) handleRegister(client *Client) {
-
+	s.clients[client.id] = client
+	client.StartReadWriteLoop()
 }
 
 func (s *WsServer) handleBroadcast(message *Message) {
@@ -78,5 +79,5 @@ func (s *WsServer) handleBroadcast(message *Message) {
 }
 
 func (s *WsServer) handleUnregister(client *Client) {
-
+	delete(s.clients, client.id)
 }

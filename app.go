@@ -12,7 +12,7 @@ func main() {
 	flag.Parse()
 
 	wsServer := GetWsServer()
-
+	wsServer.Run()
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		wsServer.ServeWs(w, r)
 	})
